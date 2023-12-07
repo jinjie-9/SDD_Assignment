@@ -22,3 +22,28 @@ def map1(turn): # prints grid (Jin Jie and Travelle)
         for cols in range(num_of_column):
             print('+-------', end='')
         print('+')
+
+while True: #(Travelle)
+    global grid 
+    grid = [['   ' for _ in range(20)] for _ in range(20)]  # 20x20 grid initialization
+    
+    BuildingName = ['R', 'I', 'C', 'O', '*']  # Residential, Industry, Commercial, Park, Road
+    BuildingList = [8, 8, 8, 8, 8]  # Initial counts for each building type
+    turn = 1
+
+    print('Welcome, mayor of Simp City!')
+    print('-----------------------------')
+    print('1. Start a new game')
+    print('2. Load saved game')
+    print('0. Exit')
+    choice = int(input('Your choice?: '))
+    if choice == 0:
+        print('Thanks for playing!')
+        break
+    elif choice == 1:
+        gamestart(turn)
+    elif choice == 2:
+        turn, BuildingList = loadsgame(grid)
+        gamestart(turn)
+    else:
+        print('That is an invalid option.')
