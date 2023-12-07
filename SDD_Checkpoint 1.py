@@ -106,6 +106,7 @@ def buildingsremain():  # display the remaining buildings (Hadith)
         print('{}                {}'.format(BuildingName[i], BuildingList[i]))
 
 
+
 def score(): # (Jin Jie)
     residential_score = 0
     industry_score = 0
@@ -156,7 +157,16 @@ def score(): # (Jin Jie)
     print(f"Park Score: {park_score}")
     print(f"Road Score: {road_score}")
 
+def randbuilding(): # (Hadith)
+    while True:
+        randno = random.randint(0, 4)
 
+        if BuildingList[randno] > 0:
+            # Update BuildingList counts based on the generated building type
+            BuildingList[randno] -= 1
+            break
+
+    return randno
 
 while True: #(Travelle)
     global grid 
@@ -182,3 +192,6 @@ while True: #(Travelle)
         gamestart(turn)
     else:
         print('That is an invalid option.')
+
+
+
