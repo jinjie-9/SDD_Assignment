@@ -98,6 +98,51 @@ def loadsgame(grid):  # loads the saved game (Dani)
 
     return turn, BuildingList
 
+def buildbuildings(randno, turn): # (Javier and Dani)
+    letters = [chr(97 + i) for i in range(20)]  # a-z
+    numbers = [i for i in range(20)]  # 0-19
+
+    while True:
+        location = input('Build where? (e.g., a5): ')
+        location = location.lower()  # lc
+        if len(location) <= 1:
+            print('That is an invalid option.')
+        elif len(location) > 2 or not location[1:].isdigit():
+            print('Input is invalid.')
+        else:
+            letter_location = location[0]
+            num_location = int(location[1]) - 1
+
+            if letter_location in letters and 0 <= num_location < 20:  # Validate the range
+                col = letters.index(letter_location)
+                row = num_location
+
+                if turn == 1:
+                    if grid[row][col] == '   ':
+                        grid[row][col] = ' ' + BuildingName[randno] + ' '
+                        break
+                else:
+                    adjacent_buildings = []
+                    if row > 0:
+                        adjacent_buildings.append(grid[row - 1][col])
+                    if row < 19:
+                        adjacent_buildings.append(grid[row + 1][col])
+                    if col < 19:
+                        adjacent_buildings.append(grid[row][col + 1])
+                    if col > 0:
+                        adjacent_buildings.append(grid[row][col - 1])
+
+                    # Check if there's any non-empty space in the adjacent buildings
+                    if any(building != '   ' for building in adjacent_buildings):
+                        if grid[row][col] == '   ':
+                            grid[row][col] = ' ' + BuildingName[randno] + ' '
+                            break
+                    else:
+                        print('You must build next to an existing building.')
+            else:
+                print('Input is out of grid bounds.')
+
+
 
 def buildingsremain():  # display the remaining buildings (Hadith)
     print('Building           Remaining')
