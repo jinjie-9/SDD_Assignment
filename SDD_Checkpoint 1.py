@@ -31,7 +31,7 @@ while True: #(Travelle)
     BuildingList = [8, 8, 8, 8, 8]  # Initial counts for each building type
     turn = 1
 
-    print('Welcome, mayor of Simp City!')
+    print('Welcome, mayor of Ngee Ann City!')
     print('-----------------------------')
     print('1. Start a new game')
     print('2. Load saved game')
@@ -89,9 +89,40 @@ def gamestart(turn):  # main game (Hadith)
 
         turn += 1
 
-    print('Final layout of Simp City:')
+    print('Final layout of Ngee Ann City:')
     map1(turn)
     score()
+
+def savegame(turn, BuildingList):  # saves current game (Dani)
+    file = open('save.txt', 'w')
+    file.write('{}\n'.format(turn))  # writes the Turn
+    for row in grid:
+        line = ','.join(row)
+        file.write(line + '\n')  # writes each row of the grid to the file
+    building_list_str = ','.join(str(building) for building in BuildingList)
+    file.write('{}\n'.format(building_list_str))  # adds remaining buildings to the text file
+    file.close()
+    print('Game Saved!')
+
+def loadsgame(grid):  # loads the saved game (Dani)
+    datafile = open("save.txt", "r")
+    dataline = datafile.readlines()
+    # get gameturn
+    turn = int(dataline[0].strip())
+
+    # get the grid
+    for i in range(20):  # Adjust the range to cover the 20x20 grid
+        temp_grid_list = []
+        line = dataline[i + 1].replace('\n', '')
+        temp_grid_list = line.split(',')
+        grid[i] = temp_grid_list
+
+    building_list_str = dataline[21].strip()  # Assuming BuildingList is in the last line
+    BuildingList = [int(building) for building in building_list_str.split(',')]
+
+    return turn, BuildingList
+
+
 def buildingsremain():  # display the remaining buildings (Hadith)
     print('Building           Remaining')
     print('--------           ---------')
