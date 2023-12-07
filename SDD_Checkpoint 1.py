@@ -23,30 +23,6 @@ def map1(turn): # prints grid (Jin Jie and Travelle)
             print('+-------', end='')
         print('+')
 
-while True: #(Travelle)
-    global grid 
-    grid = [['   ' for _ in range(20)] for _ in range(20)]  # 20x20 grid initialization
-    
-    BuildingName = ['R', 'I', 'C', 'O', '*']  # Residential, Industry, Commercial, Park, Road
-    BuildingList = [8, 8, 8, 8, 8]  # Initial counts for each building type
-    turn = 1
-
-    print('Welcome, mayor of Ngee Ann City!')
-    print('-----------------------------')
-    print('1. Start a new game')
-    print('2. Load saved game')
-    print('0. Exit')
-    choice = int(input('Your choice?: '))
-    if choice == 0:
-        print('Thanks for playing!')
-        break
-    elif choice == 1:
-        gamestart(turn)
-    elif choice == 2:
-        turn, BuildingList = loadsgame(grid)
-        gamestart(turn)
-    else:
-        print('That is an invalid option.')
 
 def gamestart(turn):  # main game (Hadith)
     max_turns = 400  # Adjust the maximum number of turns as needed
@@ -128,3 +104,81 @@ def buildingsremain():  # display the remaining buildings (Hadith)
     print('--------           ---------')
     for i in range(len(BuildingList)):
         print('{}                {}'.format(BuildingName[i], BuildingList[i]))
+
+
+def score(): # (Jin Jie)
+    residential_score = 0
+    industry_score = 0
+    commercial_score = 0
+    park_score = 0
+    road_score = 0
+
+    for row in range(len(grid)):
+        for col in range(len(grid[0])):
+            building = grid[row][col]
+
+            if building == 'R':  # Residential building
+                adj_buildings = []
+                if col > 0:
+                    adj_buildings.append(grid[row][col - 1])  # Left
+                if col < 19:
+                    adj_buildings.append(grid[row][col + 1])  # Right
+                if row > 0:
+                    adj_buildings.append(grid[row - 1][col])  # Up
+                if row < 19:
+                    adj_buildings.append(grid[row + 1][col])  # Down
+
+                adjacent_R_or_C = adj_buildings.count(' R ') + adj_buildings.count(' C ')
+                adjacent_parks = adj_buildings.count(' O ')
+                adjacent_industry = adj_buildings.count(' I ')
+
+                if ' I ' in adj_buildings:
+                    residential_score += 1
+                else:
+                    residential_score += 1 + adjacent_R_or_C + 2 * adjacent_parks
+
+            elif building == ' I ':  # Industry building
+                industry_score += 1
+
+            elif building == ' C ':  # Commercial building
+                adjacent_commercial = adj_buildings.count(' C ')
+                residential_score += adjacent_commercial
+
+            elif building == ' O ':  # Park building
+                park_score += 1
+
+            elif building == ' * ':  # Road building
+                road_score += 1
+
+    print(f"Residential Score: {residential_score}")
+    print(f"Industry Score: {industry_score}")
+    print(f"Commercial Score: {commercial_score}")
+    print(f"Park Score: {park_score}")
+    print(f"Road Score: {road_score}")
+
+
+
+while True: #(Travelle)
+    global grid 
+    grid = [['   ' for _ in range(20)] for _ in range(20)]  # 20x20 grid initialization
+    
+    BuildingName = ['R', 'I', 'C', 'O', '*']  # Residential, Industry, Commercial, Park, Road
+    BuildingList = [8, 8, 8, 8, 8]  # Initial counts for each building type
+    turn = 1
+
+    print('Welcome, mayor of Ngee Ann City!')
+    print('-----------------------------')
+    print('1. Start a new game')
+    print('2. Load saved game')
+    print('0. Exit')
+    choice = int(input('Your choice?: '))
+    if choice == 0:
+        print('Thanks for playing!')
+        break
+    elif choice == 1:
+        gamestart(turn)
+    elif choice == 2:
+        turn, BuildingList = loadsgame(grid)
+        gamestart(turn)
+    else:
+        print('That is an invalid option.')
