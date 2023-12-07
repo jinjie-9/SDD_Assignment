@@ -47,3 +47,48 @@ while True: #(Travelle)
         gamestart(turn)
     else:
         print('That is an invalid option.')
+
+def gamestart(turn):  # main game (Hadith)
+    max_turns = 400  # Adjust the maximum number of turns as needed
+
+    while turn <= max_turns:
+        randno1 = randbuilding()
+        randno2 = randbuilding()
+
+        while True:
+            print('Turn {}'.format(turn))
+            map1(turn)
+            print('1. Build a {}'.format(BuildingName[randno1]))
+            print('2. Build a {}'.format(BuildingName[randno2]))
+            print('3. See remaining buildings')
+            print('4. See current score')
+            print()
+            print('5. Save game')
+            print('0. Exit to main menu')
+            choice = input('Your choice?: ')
+
+            if choice == '1' or choice == '2':
+                if turn <= max_turns:  # Ensure turns don't exceed the maximum
+                    if choice == '1':
+                        buildbuildings(randno1, turn)
+                    else:
+                        buildbuildings(randno2, turn)
+                    break
+                else:
+                    print("You've reached the maximum turns.")
+            elif choice == '3':  # see remaining buildings
+                buildingsremain()
+            elif choice == '4':  # see current score
+                score()
+            elif choice == '5':  # save game
+                savegame(turn, BuildingList)
+            elif choice == '0':  # exit game
+                return
+            else:
+                print("Invalid option. Try again.")
+
+        turn += 1
+
+    print('Final layout of Simp City:')
+    map1(turn)
+    score()
