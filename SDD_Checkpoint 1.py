@@ -92,3 +92,8 @@ def gamestart(turn):  # main game (Hadith)
     print('Final layout of Simp City:')
     map1(turn)
     score()
+def buildingsremain():  # display the remaining buildings (Hadith)
+    print('Building           Remaining')
+    print('--------           ---------')
+    for i in range(len(BuildingList)):
+        print('{}                {}'.format(BuildingName[i], BuildingList[i]))
