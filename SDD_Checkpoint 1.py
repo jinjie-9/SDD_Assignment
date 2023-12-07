@@ -128,3 +128,14 @@ def buildingsremain():  # display the remaining buildings (Hadith)
     print('--------           ---------')
     for i in range(len(BuildingList)):
         print('{}                {}'.format(BuildingName[i], BuildingList[i]))
+
+def randbuilding(): # (Hadith)
+    while True:
+        randno = random.randint(0, 4)
+
+        if BuildingList[randno] > 0:
+            # Update BuildingList counts based on the generated building type
+            BuildingList[randno] -= 1
+            break
+
+    return randno
