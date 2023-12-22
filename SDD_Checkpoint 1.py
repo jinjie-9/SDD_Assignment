@@ -23,7 +23,6 @@ def map1(turn): # prints grid (Jin Jie and Travelle)
             print('+-------', end='')
         print('+')
 
-
 def gamestart(turn):  # main game (Hadith)
     max_turns = 400  # Adjust the maximum number of turns as needed
 
@@ -31,17 +30,30 @@ def gamestart(turn):  # main game (Hadith)
         randno1 = randbuilding()
         randno2 = randbuilding()
 
+        while randno1 == randno2:
+            randno2 = randbuilding()
+
         while True:
             print('Turn {}'.format(turn))
             map1(turn)
+            
+            print('R is Residential')
+            print('I is Industry')
+            print('C is Commercial')
+            print('O is Park')
+            print('* is Road')
+            print('')
             print('1. Build a {}'.format(BuildingName[randno1]))
             print('2. Build a {}'.format(BuildingName[randno2]))
+            
+
             print('3. See remaining buildings')
             print('4. See current score')
             print()
             print('5. Save game')
             print('0. Exit to main menu')
-            choice = input('Your choice?: ')
+            choice = input('Input a Number as your choice (Example: 1)?: ')
+            print('')
 
             if choice == '1' or choice == '2':
                 if turn <= max_turns:  # Ensure turns don't exceed the maximum
@@ -65,7 +77,7 @@ def gamestart(turn):  # main game (Hadith)
 
         turn += 1
 
-    print('Final layout of Ngee Ann City:')
+    print('Final layout of Simp City:')
     map1(turn)
     score()
 
@@ -97,6 +109,7 @@ def loadsgame(grid):  # loads the saved game (Dani)
     BuildingList = [int(building) for building in building_list_str.split(',')]
 
     return turn, BuildingList
+
 
 def buildbuildings(randno, turn): # (Javier and Dani)
     letters = [chr(97 + i) for i in range(20)]  # a-z
@@ -151,56 +164,68 @@ def buildingsremain():  # display the remaining buildings (Hadith)
         print('{}                {}'.format(BuildingName[i], BuildingList[i]))
 
 
-
-def score(): # (Jin Jie)
+def score():
     residential_score = 0
     industry_score = 0
     commercial_score = 0
     park_score = 0
     road_score = 0
+    total_industries = sum(row.count(' I ') for row in grid)  # Count total industries
 
     for row in range(len(grid)):
+        connected_roads = 0  # Reset for each row
         for col in range(len(grid[0])):
             building = grid[row][col]
+            adj_buildings = []
 
-            if building == 'R':  # Residential building
-                adj_buildings = []
-                if col > 0:
-                    adj_buildings.append(grid[row][col - 1])  # Left
-                if col < 19:
-                    adj_buildings.append(grid[row][col + 1])  # Right
-                if row > 0:
-                    adj_buildings.append(grid[row - 1][col])  # Up
-                if row < 19:
-                    adj_buildings.append(grid[row + 1][col])  # Down
+            # Check adjacent buildings
+            if col > 0:
+                adj_buildings.append(grid[row][col - 1])  # Left
+            if col < len(grid[0]) - 1:
+                adj_buildings.append(grid[row][col + 1])  # Right
+            if row > 0:
+                adj_buildings.append(grid[row - 1][col])  # Up
+            if row < len(grid) - 1:
+                adj_buildings.append(grid[row + 1][col])  # Down
 
-                adjacent_R_or_C = adj_buildings.count(' R ') + adj_buildings.count(' C ')
-                adjacent_parks = adj_buildings.count(' O ')
-                adjacent_industry = adj_buildings.count(' I ')
-
+            if building == ' R ':
                 if ' I ' in adj_buildings:
                     residential_score += 1
                 else:
-                    residential_score += 1 + adjacent_R_or_C + 2 * adjacent_parks
+                    adjacent_R_or_C = adj_buildings.count(' R ') + adj_buildings.count(' C ')
+                    adjacent_parks = adj_buildings.count(' O ')
+                    residential_score += adjacent_R_or_C + 2 * adjacent_parks
 
-            elif building == ' I ':  # Industry building
-                industry_score += 1
+            elif building == ' I ':
+                industry_score += total_industries
 
-            elif building == ' C ':  # Commercial building
+            elif building == ' C ':
                 adjacent_commercial = adj_buildings.count(' C ')
-                residential_score += adjacent_commercial
+                commercial_score += adjacent_commercial
 
-            elif building == ' O ':  # Park building
-                park_score += 1
+            elif building == ' O ':
+                adjacent_parks = adj_buildings.count(' O ')
+                park_score += adjacent_parks
 
-            elif building == ' * ':  # Road building
-                road_score += 1
+            elif building == ' * ':
+                # Count connected roads in the row
+                if connected_roads == 0 or (col > 0 and grid[row][col - 1] == ' * '):
+                    connected_roads += 1
+                else:
+                    road_score += connected_roads
+                    connected_roads = 1
 
+        # Add the score for the last set of connected roads in the row
+        road_score += connected_roads
+
+    total_score = residential_score + industry_score + commercial_score + park_score + road_score
     print(f"Residential Score: {residential_score}")
     print(f"Industry Score: {industry_score}")
     print(f"Commercial Score: {commercial_score}")
     print(f"Park Score: {park_score}")
     print(f"Road Score: {road_score}")
+    print(f"Total Score: {total_score}")
+
 
 def randbuilding(): # (Hadith)
     while True:
@@ -212,6 +237,7 @@ def randbuilding(): # (Hadith)
             break
 
     return randno
+
 
 while True: #(Travelle)
     global grid 
@@ -226,7 +252,8 @@ while True: #(Travelle)
     print('1. Start a new game')
     print('2. Load saved game')
     print('0. Exit')
-    choice = int(input('Your choice?: '))
+        
+    choice = int(input('Input a Number as your choice (Example: 1): '))
     if choice == 0:
         print('Thanks for playing!')
         break
@@ -237,6 +264,4 @@ while True: #(Travelle)
         gamestart(turn)
     else:
         print('That is an invalid option.')
-
-
 
