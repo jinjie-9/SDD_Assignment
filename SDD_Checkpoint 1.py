@@ -176,7 +176,7 @@ def buildbuildings(randno, turn): # (Javier and Dani)
             print('Input is invalid.')
         else:
             letter_location = location[0]
-            num_location = int(location[1]) - 1
+            num_location = int(location[1:]) - 1
 
             if letter_location in letters and 0 <= num_location <= 20:  # Validate the range
                 col = letters.index(letter_location)
