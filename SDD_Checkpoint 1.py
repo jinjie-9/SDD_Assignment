@@ -211,7 +211,7 @@ def buildbuildings(randno, turn): # (Javier and Dani)
                                 coin_gain = adjacent_buildings.count(' R ')
                                 game_vars['Coin'] += coin_gain
 
-                        break
+                            break
                     else:
                         print('You must build next to an existing building.')
                 
