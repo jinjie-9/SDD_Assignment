@@ -299,6 +299,7 @@ def score():  # score and coin system (Hadith)
     print(f"Total Score: {total_score}")
 def displayScores():
     score = read_scores()
+    print(score)
     print("position name score")
     for i in range(len(score)):
         print("")
@@ -332,37 +333,16 @@ def read_scores():
     return scores
 
 
-def update_score(name, new_score):
-    scores = []
-    updated = False
+def update_scores_file(file_path, updated_list):
+    print(updated_list)
+    with open(file_path, 'w') as file:
+        # Write the header
+        file.write('position, name, score\n')
 
-    # Read the existing scores
-    with open("scores.txt", 'r') as file:
-        scores.append(file.readline().strip())  # Header
-        for line in file:
-            if line.strip():  # Ignore empty lines
-                parts = line.split()
-                position = parts[0].rstrip('.')
-                current_name = ' '.join(parts[1:-1])
-                score = int(parts[-1])
-
-                if current_name == name:
-                    if new_score > score:
-                        line = f"{position}. {name} {new_score}\n"
-                        updated = True
-
-                scores.append(line.rstrip())  # Append the line to scores list
-
-    # Update the file if the score was updated
-    if updated:
-        with open("scores.txt", 'w') as file:
-            for line in scores:
-                file.write(line + "\n")
-        print(f"Score updated for {name} to {new_score}")
-    else:
-        print(f"No higher score found for {name}")
-  
-
+        # Write the updated list
+        for item in updated_list:
+            position, name, score = item
+            file.write(f"{position}. {name} {score}\n")
 
 init()
 checkfiles()  
@@ -385,7 +365,13 @@ while True: #(Travelle)
     print('3. Display Top 10 Scores')
     print('0. Exit')
     check_state = 1
-    choice = int(input('Input a Number as your choice (Example: 1): '))
+    while True:
+        try:
+            choice = int(input('Input a Number as your choice (Example: 1): '))
+            break
+        except:
+            print("Invalid Input")
+
     if choice == 0:
         print('Thanks for playing!')
         
@@ -407,21 +393,40 @@ while True: #(Travelle)
     if check_state == 0: 
         scores = read_scores()
         if len(scores) < 10:
-            username = input("type username(spaces will be removed)")
+            username = input("type username(spaces will be removed): ")
+            username.replace(" ", "")
             if len(scores) == 0:
-                scores = scores.append(["1", f"{username}", f"{game_vars['Total_score']}"])
-                update_score(username, scores)
+                scores.append(["1", f"{username}", f"{game_vars['Total_score']}"])
+                print(scores)
+                update_scores_file("scores.txt", scores)
             else:
-                scores = scores.append([f"{len(scores) + 1}", f"{username}", f"{game_vars['Total_score']}"])
-                update_score(username, scores)
+                for i in range(len(scores)):
+                    if game_vars['Total_score'] > int(scores[i][2]):\
+                        
+                        prev_rec = []
+                        for j in scores[i]:
+                            prev_rec.append(j)
+                        new_pos = int(prev_rec[0]) + 1
+                        prev_rec[0] = new_pos
+                        scores[i][2] = game_vars['Total_score']
+                        scores[i][1] = username
+
+                        scores.insert(new_pos + 1, prev_rec)
+                        for i in range(len(scores)):
+                            if i > new_pos - 1:
+                                scores[i][0] = int(scores[i][0]) + 1 
+                        break                
+                update_scores_file("scores.txt", scores)
             
         elif len(scores) == 10:
-            username = input("type username(spaces will be removed)")
+            username = input("type username(spaces will be removed): ")
+            username.replace(" ", "")
             for i in range(len(scores)):
-                if game_vars['Total_score'] > scores[i][2]:
+                if game_vars['Total_score'] > int(scores[i][2]):
                     scores[i][2] = game_vars['Total_score']
                     scores[i][1] = username
-                    update_score(username, scores)
+                    break
+            update_scores_file("scores.txt", scores)
         
         break
 
