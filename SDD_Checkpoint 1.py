@@ -77,7 +77,7 @@ def gamestart(turn):  # main game (Hadith)
 
         turn += 1
 
-    print('Final layout of Simp City:')
+    print('Final layout of Ngee Ann City:')
     map1(turn)
     score()
 
@@ -252,16 +252,26 @@ while True: #(Travelle)
     print('1. Start a new game')
     print('2. Load saved game')
     print('0. Exit')
+
+    while True:
+        try: 
+            choice = int(input('Input a Number as your choice (Example: 1): '))
+            if choice == 0:
+                print('Thanks for playing!')
+                break
+            elif choice == 1:
+                gamestart(turn)
+            elif choice == 2:
+                turn, BuildingList = loadsgame(grid)
+                gamestart(turn)
+            else:
+                print('That is an invalid option.')
+            break
+        except:
+             print('That is an invalid option.')
+             continue
+            
         
-    choice = int(input('Input a Number as your choice (Example: 1): '))
-    if choice == 0:
-        print('Thanks for playing!')
-        break
-    elif choice == 1:
-        gamestart(turn)
-    elif choice == 2:
-        turn, BuildingList = loadsgame(grid)
-        gamestart(turn)
-    else:
-        print('That is an invalid option.')
+        
+       
 
