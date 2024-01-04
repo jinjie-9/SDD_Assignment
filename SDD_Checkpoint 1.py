@@ -330,6 +330,37 @@ def read_scores():
                     score = parts[-1]
                     scores.append([position, name, score])
     return scores
+
+
+def update_score(name, new_score):
+    scores = []
+    updated = False
+
+    # Read the existing scores
+    with open("scores.txt", 'r') as file:
+        scores.append(file.readline().strip())  # Header
+        for line in file:
+            if line.strip():  # Ignore empty lines
+                parts = line.split()
+                position = parts[0].rstrip('.')
+                current_name = ' '.join(parts[1:-1])
+                score = int(parts[-1])
+
+                if current_name == name:
+                    if new_score > score:
+                        line = f"{position}. {name} {new_score}\n"
+                        updated = True
+
+                scores.append(line.rstrip())  # Append the line to scores list
+
+    # Update the file if the score was updated
+    if updated:
+        with open("scores.txt", 'w') as file:
+            for line in scores:
+                file.write(line + "\n")
+        print(f"Score updated for {name} to {new_score}")
+    else:
+        print(f"No higher score found for {name}")
   
 
 
@@ -379,8 +410,10 @@ while True: #(Travelle)
             username = input("type username(spaces will be removed)")
             if len(scores) == 0:
                 scores = scores.append(["1", f"{username}", f"{game_vars['Total_score']}"])
+                update_score(username, scores)
             else:
                 scores = scores.append([f"{len(scores) + 1}", f"{username}", f"{game_vars['Total_score']}"])
+                update_score(username, scores)
             
         elif len(scores) == 10:
             username = input("type username(spaces will be removed)")
@@ -388,6 +421,7 @@ while True: #(Travelle)
                 if game_vars['Total_score'] > scores[i][2]:
                     scores[i][2] = game_vars['Total_score']
                     scores[i][1] = username
+                    update_score(username, scores)
         
         break
 
