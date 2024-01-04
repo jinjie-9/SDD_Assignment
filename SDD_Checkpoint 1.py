@@ -1,4 +1,21 @@
 import random
+import os
+import pickle as c
+
+
+load = True
+game_vars = {}
+def init(): #initialising the game and the variables
+    global game_vars
+    game_vars = { # default values
+    "Coin": 16,
+    "Total_score": 0
+    }
+    if os.stat("save.txt").st_size == 0: # To check if there is a save in the file
+        global load
+        load = False                          # If there is no save, load is set to false
+    else:
+        load = True  
 
 def map1(turn): # prints grid (Jin Jie and Travelle)
     print('       A       B       C       D       E       F       G       H       I       J       K       L       M       N       O       P       Q       R       S       T')
@@ -36,7 +53,8 @@ def gamestart(turn):  # main game (Hadith)
         while True:
             print('Turn {}'.format(turn))
             map1(turn)
-            
+            print(f'Coins: {game_vars["Coin"]}')
+            print(f'Current total score: {game_vars["Total_score"]}')
             print('R is Residential')
             print('I is Industry')
             print('C is Commercial')
@@ -58,9 +76,15 @@ def gamestart(turn):  # main game (Hadith)
             if choice == '1' or choice == '2':
                 if turn <= max_turns:  # Ensure turns don't exceed the maximum
                     if choice == '1':
-                        buildbuildings(randno1, turn)
+                        board_is_full = buildbuildings(randno1, turn)
                     else:
-                        buildbuildings(randno2, turn)
+                        board_is_full = buildbuildings(randno2, turn)
+                    if board_is_full == True:
+                        print("Game completed!")
+                        return 0
+                    if game_vars['Coin'] == 0:
+                        print("Game over!")
+                        return 0
                     break
                 else:
                     print("You've reached the maximum turns.")
@@ -71,6 +95,7 @@ def gamestart(turn):  # main game (Hadith)
             elif choice == '5':  # save game
                 savegame(turn, BuildingList)
             elif choice == '0':  # exit game
+                checkfiles()  
                 return
             else:
                 print("Invalid option. Try again.")
@@ -80,6 +105,27 @@ def gamestart(turn):  # main game (Hadith)
     print('Final layout of Ngee Ann City:')
     map1(turn)
     score()
+
+
+###################### files and saves #############################
+
+def checkfiles():
+    print("Checking files")
+    files_to_check = ["save.txt", "scores.txt"]
+    file_names = os.listdir()
+    index = 1
+    for file in files_to_check:
+        if file in file_names:
+            print(f"Checking {index}/{len(files_to_check)}")
+        else:
+            print(f"Adding missing files {index}/{len(files_to_check)}")
+            f = open(file, '+a')
+            f.close()
+        index+=1
+    if os.stat("scores.txt").st_size == 0:
+        with open("scores.txt", 'a') as file:
+            file.write("position, name, score\n")
+    return
 
 def savegame(turn, BuildingList):  # saves current game (Dani)
     file = open('save.txt', 'w')
@@ -92,7 +138,13 @@ def savegame(turn, BuildingList):  # saves current game (Dani)
     file.close()
     print('Game Saved!')
 
+def savescore(score):
+    file = open('scores.txt', 'w')
+    file.write("{}\m".format(score))
+
 def loadsgame(grid):  # loads the saved game (Dani)
+    if (load == False):
+        return turn, BuildingList
     datafile = open("save.txt", "r")
     dataline = datafile.readlines()
     # get gameturn
@@ -120,13 +172,13 @@ def buildbuildings(randno, turn): # (Javier and Dani)
         location = location.lower()  # lc
         if len(location) <= 1:
             print('That is an invalid option.')
-        elif len(location) > 2 or not location[1:].isdigit():
+        elif len(location) > 3 or not location[1:].isdigit():
             print('Input is invalid.')
         else:
             letter_location = location[0]
             num_location = int(location[1]) - 1
 
-            if letter_location in letters and 0 <= num_location < 20:  # Validate the range
+            if letter_location in letters and 0 <= num_location <= 20:  # Validate the range
                 col = letters.index(letter_location)
                 row = num_location
 
@@ -145,17 +197,29 @@ def buildbuildings(randno, turn): # (Javier and Dani)
                     if col > 0:
                         adjacent_buildings.append(grid[row][col - 1])
 
-                    # Check if there's any non-empty space in the adjacent buildings
                     if any(building != '   ' for building in adjacent_buildings):
                         if grid[row][col] == '   ':
-                            grid[row][col] = ' ' + BuildingName[randno] + ' '
+                            building_type = BuildingName[randno]
+                            grid[row][col] = ' ' + building_type + ' '
+
+                            # Update coins for placing an 'R' adjacent to 'I' and 'C'
+                            if building_type == 'R':
+                                coin_gain = adjacent_buildings.count(' I ') + adjacent_buildings.count(' C ')
+                                game_vars['Coin'] += coin_gain
+                            # Update coins for placing an 'I' or 'C' adjacent to 'R'
+                            elif building_type in ['I', 'C']:
+                                coin_gain = adjacent_buildings.count(' R ')
+                                game_vars['Coin'] += coin_gain
+
                             break
                     else:
                         print('You must build next to an existing building.')
+                
             else:
                 print('Input is out of grid bounds.')
-
-
+    game_vars['Coin'] -= 1
+    score()
+    return is_board_full(grid)
 
 def buildingsremain():  # display the remaining buildings (Hadith)
     print('Building           Remaining')
@@ -163,8 +227,13 @@ def buildingsremain():  # display the remaining buildings (Hadith)
     for i in range(len(BuildingList)):
         print('{}                {}'.format(BuildingName[i], BuildingList[i]))
 
-
-def score():
+def is_board_full(grid):
+    for row in grid:
+        for cell in row:
+            if cell == '   ':  # Assuming '   ' represents an empty cell
+                return False  # Board is not full
+    return True  # Board is full
+def score():  # score and coin system (Hadith)
     residential_score = 0
     industry_score = 0
     commercial_score = 0
@@ -191,6 +260,7 @@ def score():
             if building == ' R ':
                 if ' I ' in adj_buildings:
                     residential_score += 1
+                    
                 else:
                     adjacent_R_or_C = adj_buildings.count(' R ') + adj_buildings.count(' C ')
                     adjacent_parks = adj_buildings.count(' O ')
@@ -198,6 +268,7 @@ def score():
 
             elif building == ' I ':
                 industry_score += total_industries
+                #if ' R ' in adj_buildings:
 
             elif building == ' C ':
                 adjacent_commercial = adj_buildings.count(' C ')
@@ -219,13 +290,22 @@ def score():
         road_score += connected_roads
 
     total_score = residential_score + industry_score + commercial_score + park_score + road_score
+    game_vars['Total_score'] = total_score
     print(f"Residential Score: {residential_score}")
     print(f"Industry Score: {industry_score}")
     print(f"Commercial Score: {commercial_score}")
     print(f"Park Score: {park_score}")
     print(f"Road Score: {road_score}")
     print(f"Total Score: {total_score}")
-
+def displayScores():
+    score = read_scores()
+    print("position name score")
+    for i in range(len(score)):
+        print("")
+        for j in range(len(score[i])):
+            print(score[i][j], end=' ')
+    print("")
+    return
 
 def randbuilding(): # (Hadith)
     while True:
@@ -237,41 +317,77 @@ def randbuilding(): # (Hadith)
             break
 
     return randno
+def read_scores():
+    scores = []
+    with open("scores.txt", 'r') as file:
+        next(file)  # Skip the header line
+        for line in file:
+            if line.strip():  # Ignore empty lines
+                parts = line.split()
+                if len(parts) >= 3:
+                    position = parts[0].rstrip('.')
+                    name = ' '.join(parts[1:-1])
+                    score = parts[-1]
+                    scores.append([position, name, score])
+    return scores
+  
 
 
+init()
+checkfiles()  
 while True: #(Travelle)
+
+
     global grid 
     grid = [['   ' for _ in range(20)] for _ in range(20)]  # 20x20 grid initialization
     
     BuildingName = ['R', 'I', 'C', 'O', '*']  # Residential, Industry, Commercial, Park, Road
     BuildingList = [8, 8, 8, 8, 8]  # Initial counts for each building type
     turn = 1
-
+    coins = 16
     print('Welcome, mayor of Ngee Ann City!')
     print('-----------------------------')
     print('1. Start a new game')
-    print('2. Load saved game')
+    if load == False:
+        print('2. Load saved game (no save found)')
+    else: print('2. Load saved game')
+    print('3. Display Top 10 Scores')
     print('0. Exit')
-
-    while True:
-        try: 
-            choice = int(input('Input a Number as your choice (Example: 1): '))
-            if choice == 0:
-                print('Thanks for playing!')
-                break
-            elif choice == 1:
-                gamestart(turn)
-            elif choice == 2:
-                turn, BuildingList = loadsgame(grid)
-                gamestart(turn)
-            else:
-                print('That is an invalid option.')
-            break
-        except:
-             print('That is an invalid option.')
-             continue
+    check_state = 1
+    choice = int(input('Input a Number as your choice (Example: 1): '))
+    if choice == 0:
+        print('Thanks for playing!')
+        
+        break
+    elif choice == 1:
+        check_state = gamestart(turn)
+    elif choice == 2:
+        try:
+            turn, BuildingList = loadsgame(grid)
             
+        except:
+            print("No saves found")
+        check_state = gamestart(turn)
+    elif choice == 3:
+        displayScores()
+    else:
+        print('That is an invalid option.')
+
+    if check_state == 0: 
+        scores = read_scores()
+        if len(scores) < 10:
+            username = input("type username(spaces will be removed)")
+            if len(scores) == 0:
+                scores = scores.append(["1", f"{username}", f"{game_vars['Total_score']}"])
+            else:
+                scores = scores.append([f"{len(scores) + 1}", f"{username}", f"{game_vars['Total_score']}"])
+            
+        elif len(scores) == 10:
+            username = input("type username(spaces will be removed)")
+            for i in range(len(scores)):
+                if game_vars['Total_score'] > scores[i][2]:
+                    scores[i][2] = game_vars['Total_score']
+                    scores[i][1] = username
         
-        
-       
+        break
 

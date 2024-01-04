@@ -1,0 +1,11 @@
+position, name, score
+1. jinjie 20
+2. chicken 19
+3. donkey 18
+4. donkey 17
+5. travelle 15
+6. dani 13
+7. javier 12
+8. hadith 9
+9. hadith 7
+10. hadith 4
