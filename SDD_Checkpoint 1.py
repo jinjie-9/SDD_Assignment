@@ -299,6 +299,7 @@ def score():
     # print(f"Park Score: {park_score}")
     # print(f"Road Score: {road_score}")
     print(f"Total Score: {total_score:.0f}")
+    print()
     
 
 
@@ -360,6 +361,7 @@ while True: #(Travelle)
     BuildingList = [8, 8, 8, 8, 8]  # Initial counts for each building type
     turn = 1
     coins = 16
+    print()
     print('Welcome, mayor of Ngee Ann City!')
     print('-----------------------------')
     print('1. Start a new game')
