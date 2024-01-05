@@ -8,7 +8,7 @@ game_vars = {}
 def init(): #initialising the game and the variables
     global game_vars
     game_vars = { # default values
-    "Coin": 16,
+    "Coin": 2,
     "Total_score": 0
     }
     if os.stat("save.txt").st_size == 0: # To check if there is a save in the file
