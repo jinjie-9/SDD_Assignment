@@ -8,7 +8,7 @@ game_vars = {}
 def init(): #initialising the game and the variables
     global game_vars
     game_vars = { # default values
-    "Coin": 2,
+    "Coin": 16,
     "Total_score": 0
     }
     if os.stat("save.txt").st_size == 0: # To check if there is a save in the file
@@ -271,13 +271,13 @@ def score():
             elif building == ' O ':
                 # Score for parks: 1 point if at least one adjacent building is a park
                 if adj_buildings.count(' O ') > 0:
-                    park_score += 1
+                    park_score += 0.5
 
 
             elif building == ' C ':
                 # Score for parks: 1 point if at least one adjacent building is a park
                 if adj_buildings.count(' C ') > 0:  
-                    commercial_score += 1
+                    commercial_score += 0.5
 
             elif building == ' * ':
                 # Count connected roads in the row
@@ -298,7 +298,7 @@ def score():
     # print(f"Commercial Score: {commercial_score}")
     # print(f"Park Score: {park_score}")
     # print(f"Road Score: {road_score}")
-    print(f"Total Score: {total_score}")
+    print(f"Total Score: {total_score:.0f}")
     
 
 
