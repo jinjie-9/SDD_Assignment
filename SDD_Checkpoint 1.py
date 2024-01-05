@@ -339,7 +339,6 @@ def read_scores():
 
 
 def update_scores_file(file_path, updated_list):
-    print(updated_list)
     with open(file_path, 'w') as file:
         # Write the header
         file.write('position, name, score\n')
@@ -402,11 +401,10 @@ while True: #(Travelle)
             username.replace(" ", "")
             if len(scores) == 0:
                 scores.append(["1", f"{username}", f"{game_vars['Total_score']}"])
-                print(scores)
                 update_scores_file("scores.txt", scores)
             else:
                 for i in range(len(scores)):
-                    if game_vars['Total_score'] > int(scores[i][2]):\
+                    if game_vars['Total_score'] > int(scores[i][2]):
                         
                         prev_rec = []
                         for j in scores[i]:
@@ -420,7 +418,10 @@ while True: #(Travelle)
                         for i in range(len(scores)):
                             if i > new_pos - 1:
                                 scores[i][0] = int(scores[i][0]) + 1 
-                        break                
+                        break
+                    else:
+                        scores.append([10, username, game_vars['Total_score']])
+                        break          
                 update_scores_file("scores.txt", scores)
             
         elif len(scores) == 10:

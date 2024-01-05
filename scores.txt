@@ -1,10 +1,2 @@
 position, name, score
-1. jiea 160000
-2. ok 159202
-3. donkey 18
-5. donkey 17
-4. chicken 19
-6. travelle 15
-7. dani 13
-8. javier 12
-9. hadith 9
+1. ok 1
